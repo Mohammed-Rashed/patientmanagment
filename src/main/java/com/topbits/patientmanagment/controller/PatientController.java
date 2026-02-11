@@ -4,10 +4,7 @@ import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.service.PatientService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/patients")
@@ -20,4 +17,11 @@ public class PatientController {
     public PatientResponse createPatient(@RequestBody @Valid CreatePatientRequest request) {
         return patientService.create(request);
     }
+
+    @GetMapping("{id}")
+    public PatientResponse getPatientById(@PathVariable Long id) {
+        return patientService.getById(id);
+    }
+
+
 }

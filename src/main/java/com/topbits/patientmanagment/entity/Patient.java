@@ -2,6 +2,7 @@ package com.topbits.patientmanagment.entity;
 
 import com.topbits.patientmanagment.domain.entity.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
 @Table(name="patients")
 public class Patient extends BaseEntity {
     @Column(name = "first_name", nullable = false, length = 100)

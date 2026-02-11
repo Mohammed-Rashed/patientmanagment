@@ -13,6 +13,9 @@ public class PatientService {
         this.patientRepository = patientRepository;
     }
     public PatientResponse create(CreatePatientRequest request) {
+        if(patientRepository.existsByEmailOrPhone(request.getEmail(), request.getPhone())) {
+            throw new IllegalArgumentException("Email or Phone already exists");
+        }
         Patient patient = Patient.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())

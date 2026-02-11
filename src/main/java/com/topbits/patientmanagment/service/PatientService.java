@@ -2,12 +2,18 @@ package com.topbits.patientmanagment.service;
 
 import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
 import com.topbits.patientmanagment.api.dto.request.UpdatePatientRequest;
+import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
+import com.topbits.patientmanagment.common.paging.PageMapper;
 import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.PatientRepository;
+import com.topbits.patientmanagment.repository.spec.PatientSpecifications;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -88,5 +94,28 @@ public class PatientService {
                 .dateOfBirth(patient.getDateOfBirth())
                 .status(String.valueOf(patient.getStatus()))
                 .build();
+    }
+
+    public PageResponse<PatientResponse> list(String search, PatientStatus status, Pageable pageable) {
+
+
+        Specification<Patient> spec =
+                (root, query, cb) -> cb.conjunction();
+        if (status != null) {
+            spec = spec.and(PatientSpecifications.hasStatus(status));
+        }
+
+        if (search != null && !search.isBlank()) {
+            spec = spec.and(PatientSpecifications.search(search.trim()));
+        }
+
+        Page<PatientResponse> page = patientRepository.findAll(spec, pageable).map(this::toResponse);
+        return PageMapper.toPageResponse(page);
+    }
+    public void deleteById(Long id) {
+        if (!patientRepository.existsById(id)) {
+            throw new NotFoundException("Patient not found");
+        }
+        patientRepository.deleteById(id);
     }
 }

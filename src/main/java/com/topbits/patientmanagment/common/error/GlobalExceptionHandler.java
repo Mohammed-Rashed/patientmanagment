@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.List;
@@ -76,5 +77,36 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(err);
     }
 
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+
+        String field = ex.getName(); // "status"
+        String allowed = "";
+
+        if (ex.getRequiredType() != null && ex.getRequiredType().isEnum()) {
+            Object[] enums = ex.getRequiredType().getEnumConstants();
+            allowed = java.util.Arrays.stream(enums)
+                    .map(Object::toString)
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("");
+        }
+
+        ApiError err = ApiError.builder()
+                .code("VALIDATION_ERROR")
+                .message("Invalid query parameter")
+                .details(java.util.List.of(
+                        new ApiError.FieldErrorItem(field,
+                                "Invalid value '" + ex.getValue() + "'" +
+                                        (allowed.isBlank() ? "" : ". Allowed values: " + allowed)
+                        )
+                ))
+                .path(req.getRequestURI())
+                .timestamp(java.time.Instant.now())
+                .build();
+
+        return ResponseEntity.badRequest().body(err);
+    }
 
 }

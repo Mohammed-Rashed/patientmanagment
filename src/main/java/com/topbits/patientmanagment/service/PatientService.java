@@ -1,9 +1,11 @@
 package com.topbits.patientmanagment.service;
 
 import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.UpdatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
+import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class PatientService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .dateOfBirth(request.getDateOfBirth())
-                .status("ACTIVE")
+                .status(PatientStatus.ACTIVE)
                 .build();
         Patient savedPatient = patientRepository.save(patient);
         return PatientResponse.builder()
@@ -34,7 +36,34 @@ public class PatientService {
                 .email(savedPatient.getEmail())
                 .phone(savedPatient.getPhone())
                 .dateOfBirth(savedPatient.getDateOfBirth())
-                .status(savedPatient.getStatus())
+                .status(String.valueOf(savedPatient.getStatus()))
+                .build();
+    }
+    public PatientResponse update(Long id,UpdatePatientRequest request) {
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Patient not found"));
+        if(patientRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
+            throw new ConflictException("Email already exists");
+        }
+        if(patientRepository.existsByPhoneAndIdNot(request.getPhone(), id)) {
+            throw new ConflictException("Phone already exists");
+        }
+        patient.setFirstName(request.getFirstName());
+        patient.setLastName(request.getLastName());
+        patient.setEmail(request.getEmail());
+        patient.setPhone(request.getPhone());
+        patient.setDateOfBirth(request.getDateOfBirth());
+        patient.setStatus(request.getStatus() != null ? request.getStatus() : patient.getStatus());
+
+        Patient savedPatient = patientRepository.save(patient);
+        return PatientResponse.builder()
+                .id(savedPatient.getId())
+                .firstName(savedPatient.getFirstName())
+                .lastName(savedPatient.getLastName())
+                .email(savedPatient.getEmail())
+                .phone(savedPatient.getPhone())
+                .dateOfBirth(savedPatient.getDateOfBirth())
+                .status(String.valueOf(savedPatient.getStatus()))
                 .build();
     }
 
@@ -49,7 +78,7 @@ public class PatientService {
                 .email(patient.getEmail())
                 .phone(patient.getPhone())
                 .dateOfBirth(patient.getDateOfBirth())
-                .status(patient.getStatus())
+                .status(String.valueOf(patient.getStatus()))
                 .build();
     }
 }

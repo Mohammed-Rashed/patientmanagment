@@ -1,6 +1,7 @@
 package com.topbits.patientmanagment.controller;
 
 import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.UpdatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.service.PatientService;
 import jakarta.validation.Valid;
@@ -21,6 +22,11 @@ public class PatientController {
     @GetMapping("{id}")
     public PatientResponse getPatientById(@PathVariable Long id) {
         return patientService.getById(id);
+    }
+
+    @PutMapping("/{id}")
+    public PatientResponse updatePatient(@PathVariable Long id, @RequestBody @Valid UpdatePatientRequest request) {
+        return patientService.update(id, request);
     }
 
 

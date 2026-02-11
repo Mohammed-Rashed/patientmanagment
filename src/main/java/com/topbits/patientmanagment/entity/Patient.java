@@ -1,9 +1,8 @@
 package com.topbits.patientmanagment.entity;
 
 import com.topbits.patientmanagment.domain.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.topbits.patientmanagment.domain.enums.PatientStatus;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -32,5 +31,6 @@ public class Patient extends BaseEntity {
     private LocalDate dateOfBirth;
 
     @Column(nullable = false, length = 20)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private PatientStatus status;
 }

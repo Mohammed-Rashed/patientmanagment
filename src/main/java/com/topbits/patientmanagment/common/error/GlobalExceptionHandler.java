@@ -1,6 +1,7 @@
 package com.topbits.patientmanagment.common.error;
 
 import com.topbits.patientmanagment.common.exception.ConflictException;
+import com.topbits.patientmanagment.common.exception.HttpMessageNotReadableException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -61,19 +62,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ResponseEntity<ApiError> handleDataIntegrity(org.springframework.dao.DataIntegrityViolationException ex,
-                                                        HttpServletRequest req) {
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
 
         ApiError err = ApiError.builder()
-                .code("CONFLICT")
-                .message("Email or Phone already exists")
+                .code("VALIDATION_ERROR")
+                .message("Invalid request body")
                 .details(List.of())
                 .path(req.getRequestURI())
                 .timestamp(Instant.now())
                 .build();
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+        return ResponseEntity.badRequest().body(err);
     }
 
 

@@ -2,7 +2,6 @@ package com.topbits.patientmanagment.controller;
 
 import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
-import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;

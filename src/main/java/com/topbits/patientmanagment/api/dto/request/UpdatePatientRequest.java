@@ -34,8 +34,6 @@ public class UpdatePatientRequest {
 
     private LocalDate dateOfBirth;
 
-    @NotBlank
-    @Size(max = 20)
     @Enumerated(EnumType.STRING)
     private PatientStatus status;
 }

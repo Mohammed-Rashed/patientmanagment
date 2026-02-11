@@ -42,6 +42,7 @@ public class PatientService {
     public PatientResponse update(Long id,UpdatePatientRequest request) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found"));
+
         if(patientRepository.existsByEmailAndIdNot(request.getEmail(), id)) {
             throw new ConflictException("Email already exists");
         }
@@ -53,17 +54,24 @@ public class PatientService {
         patient.setEmail(request.getEmail());
         patient.setPhone(request.getPhone());
         patient.setDateOfBirth(request.getDateOfBirth());
-        patient.setStatus(request.getStatus() != null ? request.getStatus() : patient.getStatus());
+        if (request.getStatus() != null) {
+            patient.setStatus(request.getStatus());
+        }
 
-        Patient savedPatient = patientRepository.save(patient);
+        Patient saved = patientRepository.save(patient);
+        return toResponse(saved);
+
+    }
+
+    private PatientResponse toResponse(Patient p) {
         return PatientResponse.builder()
-                .id(savedPatient.getId())
-                .firstName(savedPatient.getFirstName())
-                .lastName(savedPatient.getLastName())
-                .email(savedPatient.getEmail())
-                .phone(savedPatient.getPhone())
-                .dateOfBirth(savedPatient.getDateOfBirth())
-                .status(String.valueOf(savedPatient.getStatus()))
+                .id(p.getId())
+                .firstName(p.getFirstName())
+                .lastName(p.getLastName())
+                .email(p.getEmail())
+                .phone(p.getPhone())
+                .dateOfBirth(p.getDateOfBirth())
+                .status(p.getStatus().name())
                 .build();
     }
 

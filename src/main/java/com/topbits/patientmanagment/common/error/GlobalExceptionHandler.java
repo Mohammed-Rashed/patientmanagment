@@ -1,7 +1,7 @@
 package com.topbits.patientmanagment.common.error;
 
 import com.topbits.patientmanagment.common.exception.ConflictException;
-import com.topbits.patientmanagment.common.exception.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

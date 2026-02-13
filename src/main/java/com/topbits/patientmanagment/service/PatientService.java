@@ -11,6 +11,8 @@ import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.PatientRepository;
 import com.topbits.patientmanagment.repository.spec.PatientSpecifications;
+import com.topbits.patientmanagment.service.mapper.PatientMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,9 +22,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
-    public PatientService(PatientRepository patientRepository) {
+    private final PatientMapper patientMapper;
+
+    public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
+
         this.patientRepository = patientRepository;
+        this.patientMapper = patientMapper;
     }
+    @Transactional
     public PatientResponse create(CreatePatientRequest request) {
         if(patientRepository.existsByEmailOrPhone(request.getEmail(), request.getPhone())) {
             throw new ConflictException("Email or Phone already exists");
@@ -46,6 +53,7 @@ public class PatientService {
                 .status(String.valueOf(savedPatient.getStatus()))
                 .build();
     }
+    @Transactional
     public PatientResponse update(Long id,UpdatePatientRequest request) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found"));
@@ -66,27 +74,17 @@ public class PatientService {
         }
 
         Patient saved = patientRepository.save(patient);
-        return toResponse(saved);
+        return patientMapper.toResponse(saved);
 
     }
 
-    private PatientResponse toResponse(Patient p) {
-        return PatientResponse.builder()
-                .id(p.getId())
-                .firstName(p.getFirstName())
-                .lastName(p.getLastName())
-                .email(p.getEmail())
-                .phone(p.getPhone())
-                .dateOfBirth(p.getDateOfBirth())
-                .status(p.getStatus().name())
-                .build();
-    }
+
 
     public PatientResponse getById(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found"));
 
-        return toResponse(patient);
+        return patientMapper.toResponse(patient);
     }
 
     public PageResponse<PatientResponse> list(String search, PatientStatus status, Pageable pageable) {
@@ -102,9 +100,10 @@ public class PatientService {
             spec = spec.and(PatientSpecifications.search(search.trim()));
         }
 
-        Page<PatientResponse> page = patientRepository.findAll(spec, pageable).map(this::toResponse);
+        Page<PatientResponse> page = patientRepository.findAll(spec, pageable).map(patientMapper::toResponse);
         return PageMapper.toPageResponse(page);
     }
+    @Transactional
     public void deleteById(Long id) {
         if (!patientRepository.existsById(id)) {
             throw new NotFoundException("Patient not found");

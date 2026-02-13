@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class PatientService {
     private final PatientRepository patientRepository;
@@ -85,15 +86,7 @@ public class PatientService {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Patient not found"));
 
-        return PatientResponse.builder()
-                .id(patient.getId())
-                .firstName(patient.getFirstName())
-                .lastName(patient.getLastName())
-                .email(patient.getEmail())
-                .phone(patient.getPhone())
-                .dateOfBirth(patient.getDateOfBirth())
-                .status(String.valueOf(patient.getStatus()))
-                .build();
+        return toResponse(patient);
     }
 
     public PageResponse<PatientResponse> list(String search, PatientStatus status, Pageable pageable) {

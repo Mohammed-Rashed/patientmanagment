@@ -10,4 +10,6 @@ public interface PatientRepository extends JpaRepository<Patient, Long>, JpaSpec
     boolean existsByEmailOrPhone(String email, String phone);
     boolean existsByPhoneAndIdNot(String phone, Long id);
     boolean existsByEmailAndIdNot(String email, Long id);
+
+    boolean existsByEmail(String email);
 }

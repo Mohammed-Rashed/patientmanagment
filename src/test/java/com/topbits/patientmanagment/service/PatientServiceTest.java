@@ -1,8 +1,7 @@
 package com.topbits.patientmanagment.service;
 
-import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.patient.CreatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
-import com.topbits.patientmanagment.common.exception.NotFoundException;
 import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.PatientRepository;

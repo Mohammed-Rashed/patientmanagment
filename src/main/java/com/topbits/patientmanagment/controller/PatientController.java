@@ -1,17 +1,14 @@
 package com.topbits.patientmanagment.controller;
 
-import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
-import com.topbits.patientmanagment.api.dto.request.UpdatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.patient.CreatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.patient.UpdatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.service.PatientService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/patients")

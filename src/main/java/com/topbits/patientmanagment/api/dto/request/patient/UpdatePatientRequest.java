@@ -1,6 +1,8 @@
-package com.topbits.patientmanagment.api.dto.request;
+package com.topbits.patientmanagment.api.dto.request.patient;
 
 import com.topbits.patientmanagment.domain.enums.PatientStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreatePatientRequest {
+public class UpdatePatientRequest {
     @NotBlank
     @Size(max = 100)
     private String firstName;
@@ -32,5 +34,6 @@ public class CreatePatientRequest {
 
     private LocalDate dateOfBirth;
 
+    @Enumerated(EnumType.STRING)
     private PatientStatus status;
 }

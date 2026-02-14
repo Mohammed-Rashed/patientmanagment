@@ -17,7 +17,7 @@ public class DoctorMapper {
                 .lastName(req.getLastName())
                 .email(req.getEmail())
                 .phone(req.getPhone())
-                .specialty(req.getEspecialty())
+                .specialty(req.getSpecialty())
                 .status(status)
                 .build();
     }
@@ -26,7 +26,7 @@ public class DoctorMapper {
         patient.setLastName(req.getLastName());
         patient.setEmail(req.getEmail());
         patient.setPhone(req.getPhone());
-        patient.setSpecialty(req.getEspecialty());
+        patient.setSpecialty(req.getSpecialty());
 
         if (req.getStatus() != null) {
             patient.setStatus(req.getStatus());

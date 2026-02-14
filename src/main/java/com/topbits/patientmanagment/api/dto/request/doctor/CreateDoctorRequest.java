@@ -34,7 +34,7 @@ public class CreateDoctorRequest {
     private String phone;
 
     @NotNull
-    private DoctorSpecialty especialty;
+    private DoctorSpecialty specialty;
 
     private DoctorStatus status;
 }

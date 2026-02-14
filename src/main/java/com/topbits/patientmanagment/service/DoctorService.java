@@ -39,7 +39,7 @@ public class DoctorService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
-                .specialty(request.getEspecialty())
+                .specialty(request.getSpecialty())
                 .status(DoctorStatus.ACTIVE)
                 .build();
         Doctor savedDoctor = doctorRepository.save(doctor);
@@ -68,7 +68,7 @@ public class DoctorService {
         doctor.setLastName(request.getLastName());
         doctor.setEmail(request.getEmail());
         doctor.setPhone(request.getPhone());
-        doctor.setSpecialty(request.getEspecialty());
+        doctor.setSpecialty(request.getSpecialty());
         if (request.getStatus() != null) {
             doctor.setStatus(request.getStatus());
         }

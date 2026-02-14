@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.common.error;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
@@ -12,10 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex,
                                                      HttpServletRequest req) {
@@ -65,6 +70,32 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        Throwable most = ex.getMostSpecificCause();
+        if (most instanceof InvalidFormatException ifx
+                && ifx.getTargetType() != null
+                && ifx.getTargetType().isEnum()) {
+
+            String fieldName = (ifx.getPath() != null && !ifx.getPath().isEmpty())
+                    ? ifx.getPath().get(ifx.getPath().size() - 1).getFieldName()
+                    : "unknown";
+
+            String errorDetails = String.format(
+                    "Invalid enum value: '%s' for the field: '%s'. The value must be one of: %s.",
+                    ifx.getValue(),
+                    fieldName,
+                    Arrays.toString(ifx.getTargetType().getEnumConstants())
+            );
+
+            ApiError err = ApiError.builder()
+                    .code("VALIDATION_ERROR")
+                    .message("Invalid request body")
+                    .details(List.of(new ApiError.FieldErrorItem(fieldName, errorDetails)))
+                    .path(req.getRequestURI())
+                    .timestamp(Instant.now())
+                    .build();
+
+            return ResponseEntity.badRequest().body(err);
+        }
 
         ApiError err = ApiError.builder()
                 .code("VALIDATION_ERROR")

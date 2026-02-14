@@ -1,7 +1,7 @@
 package com.topbits.patientmanagment.service;
 
-import com.topbits.patientmanagment.api.dto.request.CreatePatientRequest;
-import com.topbits.patientmanagment.api.dto.request.UpdatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.patient.CreatePatientRequest;
+import com.topbits.patientmanagment.api.dto.request.patient.UpdatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;

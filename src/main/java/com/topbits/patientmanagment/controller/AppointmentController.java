@@ -40,4 +40,9 @@ public class AppointmentController {
     public AppointmentResponse update(@PathVariable Long id,@RequestBody UpdateAppointmentRequest request) {
         return appointmentService.update(id,request);
     }
+
+    @PutMapping("/{id}/cancel")
+    public AppointmentResponse update(@PathVariable Long id) {
+        return appointmentService.cancel(id);
+    }
 }

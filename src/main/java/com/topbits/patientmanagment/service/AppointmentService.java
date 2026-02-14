@@ -123,4 +123,11 @@ public class AppointmentService {
         return PageMapper.toPageResponse(page);
     }
 
+    @Transactional
+    public AppointmentResponse cancel(Long id) {
+        Appointment existAppointment = appointmentRepository.findByIdAndStatusNot(id,AppointmentStatus.CANCELED).orElseThrow(() -> new NotFoundException("Appointment not found"));
+        existAppointment.setStatus(AppointmentStatus.CANCELED);
+        return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
+    }
+
 }

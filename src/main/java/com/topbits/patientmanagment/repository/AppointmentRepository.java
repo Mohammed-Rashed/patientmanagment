@@ -2,6 +2,7 @@ package com.topbits.patientmanagment.repository;
 
 import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
+import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import com.topbits.patientmanagment.entity.Appointment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
 
     boolean existsByDoctorIdAndStartTimeLessThanAndEndTimeGreaterThan(Long doctorId, LocalDateTime endTime, LocalDateTime startTime);
 
+    Optional<Appointment> findByIdAndStatusNot(Long id, AppointmentStatus appointmentStatus);
 }

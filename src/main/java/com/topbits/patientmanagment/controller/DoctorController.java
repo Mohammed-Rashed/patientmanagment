@@ -22,7 +22,7 @@ public class DoctorController {
         return doctorService.create(request);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public DoctorResponse getDoctorById(@PathVariable Long id) {
         return doctorService.getById(id);
     }
@@ -41,7 +41,7 @@ public class DoctorController {
         return doctorService.list(search, status, pageable);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void deleteDoctor(@PathVariable Long id) {
         doctorService.deleteById(id);
     }

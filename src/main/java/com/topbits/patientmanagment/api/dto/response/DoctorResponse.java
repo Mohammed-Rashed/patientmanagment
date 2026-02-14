@@ -2,8 +2,6 @@ package com.topbits.patientmanagment.api.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @NoArgsConstructor

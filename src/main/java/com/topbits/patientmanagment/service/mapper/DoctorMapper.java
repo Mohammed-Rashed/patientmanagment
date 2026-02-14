@@ -21,15 +21,15 @@ public class DoctorMapper {
                 .status(status)
                 .build();
     }
-    public void updateEntity(Doctor patient, UpdateDoctorRequest req) {
-        patient.setFirstName(req.getFirstName());
-        patient.setLastName(req.getLastName());
-        patient.setEmail(req.getEmail());
-        patient.setPhone(req.getPhone());
-        patient.setSpecialty(req.getSpecialty());
+    public void updateEntity(Doctor doctor, UpdateDoctorRequest req) {
+        doctor.setFirstName(req.getFirstName());
+        doctor.setLastName(req.getLastName());
+        doctor.setEmail(req.getEmail());
+        doctor.setPhone(req.getPhone());
+        doctor.setSpecialty(req.getSpecialty());
 
         if (req.getStatus() != null) {
-            patient.setStatus(req.getStatus());
+            doctor.setStatus(req.getStatus());
         }
     }
 

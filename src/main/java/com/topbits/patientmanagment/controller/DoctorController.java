@@ -2,8 +2,6 @@ package com.topbits.patientmanagment.controller;
 
 import com.topbits.patientmanagment.api.dto.request.doctor.CreateDoctorRequest;
 import com.topbits.patientmanagment.api.dto.request.doctor.UpdateDoctorRequest;
-import com.topbits.patientmanagment.api.dto.request.patient.CreatePatientRequest;
-import com.topbits.patientmanagment.api.dto.request.patient.UpdatePatientRequest;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.api.dto.response.DoctorResponse;
 import com.topbits.patientmanagment.domain.enums.DoctorStatus;

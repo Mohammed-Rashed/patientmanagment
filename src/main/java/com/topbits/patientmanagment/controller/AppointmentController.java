@@ -29,7 +29,7 @@ public class AppointmentController {
         return appointmentService.list( status, pageable);
     }
     @GetMapping("/{id}")
-    public AppointmentResponse findById(Long id) {
+    public AppointmentResponse findById(@PathVariable Long id) {
         return appointmentService.findById(id);
     }
     @PostMapping()

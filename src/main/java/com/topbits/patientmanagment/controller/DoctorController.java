@@ -11,10 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/patients")
-public class PatientController {
+@RequestMapping("/api/v1/doctors")
+public class DoctorController {
     private final PatientService patientService;
-    public PatientController(PatientService patientService) {
+    public DoctorController(PatientService patientService) {
         this.patientService = patientService;
     }
     @PostMapping()

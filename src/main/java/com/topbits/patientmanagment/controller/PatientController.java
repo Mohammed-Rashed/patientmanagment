@@ -36,7 +36,9 @@ public class PatientController {
     public PageResponse<PatientResponse> getPatients(
                                              @RequestParam(required = false) String search,
                                              @RequestParam(required = false) PatientStatus status,
-                                             Pageable pageable
+
+
+                                                Pageable pageable
     ) {
         return patientService.list(search, status, pageable);
     }

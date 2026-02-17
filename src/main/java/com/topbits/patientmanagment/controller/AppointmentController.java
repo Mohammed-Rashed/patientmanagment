@@ -2,17 +2,17 @@ package com.topbits.patientmanagment.controller;
 
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
+import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;
 import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
-import com.topbits.patientmanagment.api.dto.response.DoctorResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
-import com.topbits.patientmanagment.domain.enums.DoctorStatus;
-import com.topbits.patientmanagment.entity.Appointment;
 import com.topbits.patientmanagment.service.AppointmentService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/appointments")
@@ -44,5 +44,12 @@ public class AppointmentController {
     @PutMapping("/{id}/cancel")
     public AppointmentResponse update(@PathVariable Long id) {
         return appointmentService.cancel(id);
+    }
+    @GetMapping("/slots/{doctorId}")
+    public List<AvailableSlotResponse> getDoctorSlots(
+            @PathVariable Long doctorId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return appointmentService.getDoctorSlots(doctorId, date);
     }
 }

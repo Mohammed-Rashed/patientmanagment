@@ -6,11 +6,11 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class AppointmentSpecifications {
 
-
     public static Specification<Appointment> hasStatus(AppointmentStatus status) {
         return (root, query, cb) -> cb.equal(root.get("status"), status);
     }
 
-
-
+    public static Specification<Appointment> hasDoctorId(Long doctorId) {
+        return (root, query, cb) -> cb.equal(root.get("doctor").get("id"), doctorId);
+    }
 }

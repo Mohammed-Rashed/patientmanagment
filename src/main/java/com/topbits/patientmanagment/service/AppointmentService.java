@@ -166,7 +166,7 @@ public class AppointmentService {
         doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new NotFoundException("Doctor not found"));
 
-        LocalDateTime windowStart = date.atTime(LocalTime.of(0, 0));
+        LocalDateTime windowStart = date.atTime(LocalTime.of(16, 0));
         LocalDateTime windowEnd = date.atTime(LocalTime.of(22, 0));
         Duration slotDuration = Duration.ofMinutes(15);
 

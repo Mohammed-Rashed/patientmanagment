@@ -16,6 +16,8 @@ import java.util.Set;
 @Table(name = "users")
 public class User extends BaseEntity {
     @Column(unique = true, length = 120)
+    private String name;
+    @Column(unique = true, length = 120)
     private String email;
 
     @Column(unique = true, length = 25)
@@ -25,7 +27,7 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-    private boolean enabled = true;
+    private Boolean enabled = true;
 
 
     @ManyToMany(fetch = FetchType.EAGER)

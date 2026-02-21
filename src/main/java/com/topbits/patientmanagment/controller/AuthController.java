@@ -30,12 +30,12 @@ public class AuthController {
         this.jwtService = jwtService;
     }
     @GetMapping("/me")
-    public Map<String,Object> me(Authentication authentication){
+    public ResponseEntity<?> me(Authentication authentication){
         Map<String,Object> res =new HashMap<>();
-        res.put("name",authentication.getName());
+        res.put("email",authentication.getName());
         res.put("roles",authentication.getAuthorities());
         res.put("authenticated", authentication.isAuthenticated());
-        return res;
+        return ResponseEntity.ok(res);
 
     }
 

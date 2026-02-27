@@ -20,12 +20,12 @@ public class RefreshTokenService {
         return token;
     }
 
-    public String getEmailOrThrow(String token) {
-        String email = redis.opsForValue().get(key(token));
-        if (email == null) {
+    public String getIdOrThrow(String token) {
+        String id = redis.opsForValue().get(key(token));
+        if (id == null) {
             throw new RuntimeException("INVALID_REFRESH_TOKEN");
         }
-        return email;
+        return id;
     }
 
     public void revoke(String token) {

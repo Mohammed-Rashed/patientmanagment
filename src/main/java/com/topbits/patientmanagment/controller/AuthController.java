@@ -1,6 +1,7 @@
 package com.topbits.patientmanagment.controller;
 
 import com.topbits.patientmanagment.api.dto.request.auth.LoginRequest;
+import com.topbits.patientmanagment.api.dto.request.auth.RefreshRequest;
 import com.topbits.patientmanagment.api.dto.request.auth.RegisterUserRequest;
 import com.topbits.patientmanagment.api.dto.response.LoginResponse;
 import com.topbits.patientmanagment.api.dto.response.UserResponse;
@@ -71,5 +72,12 @@ public class AuthController {
                 .phone(user.getName())
                 .build();
         return ResponseEntity.ok(userResponse);
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody @Valid RefreshRequest request) {
+        String id = refreshTokenService.getIdOrThrow(request.getRefreshToken());
+        LoginResponse user = jwtService.generateTokenFromUserId(id);
+        user.setRefreshToken(request.getRefreshToken());
+        return ResponseEntity.ok(user);
     }
 }

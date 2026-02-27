@@ -80,4 +80,10 @@ public class AuthController {
         user.setRefreshToken(request.getRefreshToken());
         return ResponseEntity.ok(user);
     }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody @Valid RefreshRequest request) {
+        refreshTokenService.revoke(request.getRefreshToken());
+        return ResponseEntity.ok().build();
+    }
+
 }

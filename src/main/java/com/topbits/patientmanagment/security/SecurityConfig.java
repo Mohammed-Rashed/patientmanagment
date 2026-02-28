@@ -44,7 +44,7 @@ public class SecurityConfig   {
                         .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/doctors/**").hasRole("DOCTOR")
                         .requestMatchers("/api/v1/patients/**").hasRole("PATIENT")
-                        .requestMatchers("/api/v1/redis-test").hasRole("DOCTOR")
+                        .requestMatchers("/api/v1/appointments/**").hasRole("DOCTOR")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(b -> b.disable())

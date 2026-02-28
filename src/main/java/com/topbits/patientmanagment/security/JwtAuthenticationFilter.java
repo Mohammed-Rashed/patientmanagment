@@ -45,11 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            String username = jwtService.extractUsername(token);
+            String id = jwtService.extractUsername(token);
 
-            if (username != null && !username.isBlank()) {
+            if (id != null && !id.isBlank()) {
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(id);
 
                 if (jwtService.isTokenValid(token, userDetails)) {
 
@@ -66,6 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ignored) {
+            System.out.println("ignored exception");
 //            401
         }
 

@@ -7,6 +7,7 @@ import com.topbits.patientmanagment.api.dto.response.DoctorResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
 import com.topbits.patientmanagment.common.paging.PageMapper;
+import com.topbits.patientmanagment.domain.enums.DoctorSpecialty;
 import com.topbits.patientmanagment.domain.enums.DoctorStatus;
 import com.topbits.patientmanagment.entity.Doctor;
 import com.topbits.patientmanagment.repository.DoctorRepository;
@@ -87,13 +88,16 @@ public class DoctorService {
         return doctorMapper.toResponse(doctor);
     }
 
-    public PageResponse<DoctorResponse> list(String search, DoctorStatus status, Pageable pageable) {
+    public PageResponse<DoctorResponse> list(String search, DoctorStatus status, DoctorSpecialty specialty, Pageable pageable) {
 
 
         Specification<Doctor> spec =
                 (root, query, cb) -> cb.conjunction();
         if (status != null) {
             spec = spec.and(DoctorSpecifications.hasStatus(status));
+        }
+        if (specialty != null) {
+            spec = spec.and(DoctorSpecifications.hasSpecialty(specialty));
         }
 
         if (search != null && !search.isBlank()) {

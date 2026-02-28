@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.common.error;
 
+import jakarta.validation.ValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -140,4 +141,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(err);
     }
 
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ApiError> handleValidation(ValidationException ex,HttpServletRequest req) {
+        ApiError err = ApiError.builder()
+                .code("VALIDATION_ERROR")
+                .message(ex.getMessage())
+                .details(List.of())
+                .path(req.getRequestURI())
+                .timestamp(java.time.Instant.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(err);
+    }
 }

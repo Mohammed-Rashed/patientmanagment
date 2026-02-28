@@ -1,4 +1,4 @@
-package com.topbits.patientmanagment.controller;
+package com.topbits.patientmanagment.controller.appointment;
 
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
@@ -9,6 +9,7 @@ import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import com.topbits.patientmanagment.service.AppointmentService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -33,8 +34,8 @@ public class AppointmentController {
         return appointmentService.findById(id);
     }
     @PostMapping()
-    public AppointmentResponse create(@RequestBody CreateAppointmentRequest request) {
-        return appointmentService.create(request);
+    public AppointmentResponse create(@RequestBody CreateAppointmentRequest request, Authentication authentication) {
+        return appointmentService.create(request,authentication);
     }
     @PutMapping("/{id}")
     public AppointmentResponse update(@PathVariable Long id,@RequestBody UpdateAppointmentRequest request) {

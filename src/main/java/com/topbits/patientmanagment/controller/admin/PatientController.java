@@ -1,4 +1,4 @@
-package com.topbits.patientmanagment.controller;
+package com.topbits.patientmanagment.controller.admin;
 
 import com.topbits.patientmanagment.api.dto.request.patient.CreatePatientRequest;
 import com.topbits.patientmanagment.api.dto.request.patient.UpdatePatientRequest;

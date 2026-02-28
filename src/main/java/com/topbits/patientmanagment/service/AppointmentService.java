@@ -22,6 +22,8 @@ import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -31,6 +33,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.topbits.patientmanagment.common.security.SecurityUtils.hasRole;
 
 @Service
 public class AppointmentService {
@@ -58,8 +62,28 @@ public class AppointmentService {
         return appointmentMapper.toResponse(appointment);
     }
     @Transactional
-    public AppointmentResponse create(CreateAppointmentRequest createAppointmentRequest) {
+    public AppointmentResponse create(CreateAppointmentRequest createAppointmentRequest, Authentication authentication) {
 
+        Long actorUserId = Long.valueOf(authentication.getName());
+        boolean isPatient = hasRole(authentication, "ROLE_PATIENT");
+        boolean isDoctor  = hasRole(authentication, "ROLE_DOCTOR");
+        boolean isAdmin   = hasRole(authentication, "ROLE_ADMIN");
+        Long targetPatientId;
+
+        if (isPatient) {
+            if (createAppointmentRequest.getPatientId() != null) {
+                throw new ValidationException("Patient cannot book for another patient");
+            }
+            targetPatientId = actorUserId;
+        } else if (isDoctor || isAdmin) {
+            if (createAppointmentRequest.getPatientId() == null) {
+                throw new ValidationException("patientId is required");
+            }
+            targetPatientId = createAppointmentRequest.getPatientId();
+        } else {
+            throw new RuntimeException("FORBIDDEN");
+        }
+        createAppointmentRequest.setPatientId(targetPatientId);
         ensureTimeAccurately(
                 createAppointmentRequest.getStartTime(),
                 createAppointmentRequest.getEndTime()
@@ -79,7 +103,7 @@ public class AppointmentService {
                 .doctor(doctor)
                 .startTime(createAppointmentRequest.getStartTime())
                 .endTime(createAppointmentRequest.getEndTime())
-                .status(createAppointmentRequest.getStatus())
+                .status(AppointmentStatus.SCHEDULED)
                 .notes(createAppointmentRequest.getNotes())
                 .build();
         return appointmentMapper.toResponse(appointmentRepository.save(appointment));

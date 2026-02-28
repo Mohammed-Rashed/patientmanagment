@@ -1,10 +1,16 @@
 package com.topbits.patientmanagment.security;
 
+import com.topbits.patientmanagment.api.dto.response.LoginResponse;
+import com.topbits.patientmanagment.entity.User;
+import com.topbits.patientmanagment.repository.UserRepository;
+import com.topbits.patientmanagment.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -16,13 +22,18 @@ import java.util.function.Function;
 public class JwtService {
     private final SecretKey secretKey;
     private final long expMinutes;
-
+    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.exp-minutes}") long expMinutes
+            @Value("${app.jwt.exp-minutes}") long expMinutes,
+            UserDetailsService userDetailsService,
+            UserRepository userRepository
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expMinutes = expMinutes;
+        this.userDetailsService=userDetailsService;
+        this.userRepository = userRepository;
     }
 
     public String generateToken(UserDetails userDetails) {
@@ -63,6 +74,15 @@ public class JwtService {
     private boolean isTokenExpired(String token) {
         Date exp = extractClaim(token, Claims::getExpiration);
         return exp != null && exp.before(new Date());
+    }
+
+    public LoginResponse generateTokenFromUserId(String id){
+        User user = userRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        String token = generateToken(userDetails);
+        return LoginResponse.builder().token(token).refreshToken("").expiresIn(expMinutes).build();
     }
 
 

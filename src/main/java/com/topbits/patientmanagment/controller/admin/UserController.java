@@ -1,12 +1,10 @@
-package com.topbits.patientmanagment.controller;
+package com.topbits.patientmanagment.controller.admin;
 
 
 import com.topbits.patientmanagment.api.dto.request.user.CreateUserRequest;
 import com.topbits.patientmanagment.api.dto.request.user.UpdateUserRequest;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
-import com.topbits.patientmanagment.api.dto.response.PatientResponse;
 import com.topbits.patientmanagment.api.dto.response.UserResponse;
-import com.topbits.patientmanagment.domain.enums.PatientStatus;
 import com.topbits.patientmanagment.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;

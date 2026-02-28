@@ -3,6 +3,7 @@ package com.topbits.patientmanagment.service;
 import com.topbits.patientmanagment.api.dto.request.auth.LoginRequest;
 import com.topbits.patientmanagment.api.dto.request.auth.RegisterUserRequest;
 import com.topbits.patientmanagment.common.exception.ConflictException;
+import com.topbits.patientmanagment.common.exception.NotFoundException;
 import com.topbits.patientmanagment.entity.User;
 import com.topbits.patientmanagment.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -44,8 +45,10 @@ public class AuthenticationService {
     }
 
     public UserDetails authenticate(LoginRequest request) {
+        User user=userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new NotFoundException("User not found"));
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+                new UsernamePasswordAuthenticationToken(user.getId(), request.password())
         );
         return (UserDetails) auth.getPrincipal();
 

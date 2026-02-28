@@ -22,6 +22,8 @@ import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -57,9 +59,11 @@ public class AppointmentService {
 
         return appointmentMapper.toResponse(appointment);
     }
+    @Modifying
     @Transactional
-    public AppointmentResponse create(CreateAppointmentRequest createAppointmentRequest) {
+    public AppointmentResponse create(CreateAppointmentRequest createAppointmentRequest, Authentication authentication) {
 
+//        createAppointmentRequest.setPatientId(Long.valueOf(authentication.getName()));
         ensureTimeAccurately(
                 createAppointmentRequest.getStartTime(),
                 createAppointmentRequest.getEndTime()
@@ -79,7 +83,7 @@ public class AppointmentService {
                 .doctor(doctor)
                 .startTime(createAppointmentRequest.getStartTime())
                 .endTime(createAppointmentRequest.getEndTime())
-                .status(createAppointmentRequest.getStatus())
+                .status(AppointmentStatus.SCHEDULED)
                 .notes(createAppointmentRequest.getNotes())
                 .build();
         return appointmentMapper.toResponse(appointmentRepository.save(appointment));

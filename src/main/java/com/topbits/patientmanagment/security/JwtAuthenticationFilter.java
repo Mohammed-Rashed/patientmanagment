@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ignored) {
-            System.out.println("ignored exception");
+            System.out.println("ignored exception"+ignored.toString());
 //            401
         }
 

@@ -20,7 +20,5 @@ public class CreateAppointmentRequest {
     @NotNull(message = "endTime is required")
     private LocalDateTime endTime;
 
-    private AppointmentStatus status;
-
     private String notes;
 }

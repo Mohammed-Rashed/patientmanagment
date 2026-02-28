@@ -2,6 +2,7 @@ package com.topbits.patientmanagment.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,10 +42,11 @@ public class SecurityConfig   {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/doctors").permitAll()
                         .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/doctors/**").hasRole("DOCTOR")
-                        .requestMatchers("/api/v1/patients/**").hasRole("PATIENT")
-                        .requestMatchers("/api/v1/appointments/**").hasRole("DOCTOR")
+                        .requestMatchers("/api/v1/doctors/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/patients/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/appointments/**").hasAnyRole("ADMIN", "PATIENT","DOCTOR")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(b -> b.disable())

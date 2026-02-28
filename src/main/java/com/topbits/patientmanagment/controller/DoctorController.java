@@ -4,6 +4,7 @@ import com.topbits.patientmanagment.api.dto.request.doctor.CreateDoctorRequest;
 import com.topbits.patientmanagment.api.dto.request.doctor.UpdateDoctorRequest;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.api.dto.response.DoctorResponse;
+import com.topbits.patientmanagment.domain.enums.DoctorSpecialty;
 import com.topbits.patientmanagment.domain.enums.DoctorStatus;
 import com.topbits.patientmanagment.service.DoctorService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class DoctorController {
         return doctorService.create(request);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public DoctorResponse getPatientById(@PathVariable Long id) {
         return doctorService.getById(id);
     }
@@ -36,9 +37,10 @@ public class DoctorController {
     public PageResponse<DoctorResponse> getPatients(
                                              @RequestParam(required = false) String search,
                                              @RequestParam(required = false) DoctorStatus status,
+                                             @RequestParam(required = false) DoctorSpecialty specialty,
                                              Pageable pageable
     ) {
-        return doctorService.list(search, status, pageable);
+        return doctorService.list(search, status, specialty,pageable);
     }
 
     @DeleteMapping("{id}")

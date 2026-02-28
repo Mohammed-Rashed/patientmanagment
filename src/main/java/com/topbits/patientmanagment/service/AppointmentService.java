@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.topbits.patientmanagment.common.security.SecurityUtils.hasRole;
+
 @Service
 public class AppointmentService {
     final private AppointmentRepository appointmentRepository;
@@ -59,11 +61,29 @@ public class AppointmentService {
 
         return appointmentMapper.toResponse(appointment);
     }
-    @Modifying
     @Transactional
     public AppointmentResponse create(CreateAppointmentRequest createAppointmentRequest, Authentication authentication) {
 
-//        createAppointmentRequest.setPatientId(Long.valueOf(authentication.getName()));
+        Long actorUserId = Long.valueOf(authentication.getName());
+        boolean isPatient = hasRole(authentication, "ROLE_PATIENT");
+        boolean isDoctor  = hasRole(authentication, "ROLE_DOCTOR");
+        boolean isAdmin   = hasRole(authentication, "ROLE_ADMIN");
+        Long targetPatientId;
+
+        if (isPatient) {
+            if (createAppointmentRequest.getPatientId() != null) {
+                throw new ValidationException("Patient cannot book for another patient");
+            }
+            targetPatientId = actorUserId;
+        } else if (isDoctor || isAdmin) {
+            if (createAppointmentRequest.getPatientId() == null) {
+                throw new ValidationException("patientId is required");
+            }
+            targetPatientId = createAppointmentRequest.getPatientId();
+        } else {
+            throw new RuntimeException("FORBIDDEN");
+        }
+        createAppointmentRequest.setPatientId(targetPatientId);
         ensureTimeAccurately(
                 createAppointmentRequest.getStartTime(),
                 createAppointmentRequest.getEndTime()

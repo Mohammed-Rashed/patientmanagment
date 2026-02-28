@@ -1,4 +1,4 @@
-package com.topbits.patientmanagment.controller;
+package com.topbits.patientmanagment.controller.appointment;
 
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;

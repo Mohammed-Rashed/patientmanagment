@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/doctors")
+@RequestMapping("/api/v1/admin/doctors")
 public class DoctorController {
     private final DoctorService doctorService;
     public DoctorController(DoctorService doctorService) {

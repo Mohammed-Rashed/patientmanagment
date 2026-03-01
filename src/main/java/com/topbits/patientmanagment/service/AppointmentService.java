@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.service;
 
+import com.topbits.patientmanagment.api.dto.gerneral.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;
@@ -168,11 +169,17 @@ public class AppointmentService {
         }
 
     }
-    public PageResponse<AppointmentResponse> list( AppointmentStatus status, Pageable pageable) {
+    public PageResponse<AppointmentResponse> list(AppointmentSearchCriteria c, Pageable pageable) {
         Specification<Appointment> spec =
                 (root, query, cb) -> cb.conjunction();
-        if (status != null) {
-            spec = spec.and(AppointmentSpecifications.hasStatus(status));
+        if (c.getStatus() != null) {
+            spec = spec.and(AppointmentSpecifications.hasStatus(c.getStatus()));
+        }
+        if (c.getDoctorId() != null) {
+            spec = spec.and(AppointmentSpecifications.hasDoctorId(c.getDoctorId()));
+        }
+        if (c.getPatientId() != null) {
+            spec = spec.and(AppointmentSpecifications.hasPatientId(c.getPatientId()));
         }
 
         Page<AppointmentResponse> page = appointmentRepository.findAll(spec, pageable).map(appointmentMapper::toResponse);

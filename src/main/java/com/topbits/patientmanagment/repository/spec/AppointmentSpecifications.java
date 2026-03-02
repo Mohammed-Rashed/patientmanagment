@@ -14,10 +14,10 @@ public class AppointmentSpecifications {
     }
 
     public static Specification<Appointment> hasDoctorId(Long doctorId) {
-        return (root, query, cb) -> cb.equal(root.get("doctor").get("id"), doctorId);
+        return (root, query, cb) -> cb.equal(root.get("doctor").get("user").get("id"), doctorId);
     }
     public static Specification<Appointment> hasPatientId(Long patientId) {
-        return (root, query, cb) -> cb.equal(root.get("patient").get("id"), patientId);
+        return (root, query, cb) -> cb.equal(root.get("patient").get("user").get("id"), patientId);
     }
     public static Specification<Appointment> hasDate(LocalDate date) {
         return (root, query, cb) -> {

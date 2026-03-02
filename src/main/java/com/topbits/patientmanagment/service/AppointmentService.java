@@ -1,6 +1,6 @@
 package com.topbits.patientmanagment.service;
 
-import com.topbits.patientmanagment.api.dto.gerneral.AppointmentSearchCriteria;
+import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;
@@ -23,7 +23,6 @@ import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 

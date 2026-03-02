@@ -1,6 +1,6 @@
 package com.topbits.patientmanagment.controller.appointment;
 
-import com.topbits.patientmanagment.api.dto.gerneral.AppointmentSearchCriteria;
+import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;

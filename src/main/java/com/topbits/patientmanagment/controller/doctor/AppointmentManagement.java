@@ -1,6 +1,6 @@
 package com.topbits.patientmanagment.controller.doctor;
 
-import com.topbits.patientmanagment.api.dto.gerneral.AppointmentSearchCriteria;
+import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;

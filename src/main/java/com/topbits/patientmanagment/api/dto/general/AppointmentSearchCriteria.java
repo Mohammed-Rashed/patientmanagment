@@ -1,4 +1,4 @@
-package com.topbits.patientmanagment.api.dto.gerneral;
+package com.topbits.patientmanagment.api.dto.general;
 
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import lombok.AllArgsConstructor;

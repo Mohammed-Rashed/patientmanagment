@@ -7,7 +7,9 @@ import com.topbits.patientmanagment.api.dto.response.UserResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
 import com.topbits.patientmanagment.common.paging.PageMapper;
+import com.topbits.patientmanagment.entity.Role;
 import com.topbits.patientmanagment.entity.User;
+import com.topbits.patientmanagment.repository.RoleRepository;
 import com.topbits.patientmanagment.repository.UserRepository;
 import com.topbits.patientmanagment.repository.spec.UserSpecifications;
 import com.topbits.patientmanagment.service.mapper.UserMapper;
@@ -15,17 +17,27 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,UserMapper  userMapper,
+                       PasswordEncoder passwordEncoder,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
-        this.userMapper = new UserMapper();
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+
     }
 
     @Transactional
@@ -33,12 +45,17 @@ public class UserService {
         if(userRepository.existsByEmailOrPhone(request.getEmail(), request.getPhone())) {
             throw new ConflictException("Email or Phone already exists");
         }
-        User patient = User.builder()
+        User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
+                .enabled(true)
+                .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-        User savedUser = userRepository.save(patient);
+        List<Role> roles = roleRepository.findByNameIn(request.getRoles());
+
+        user.getRoles().addAll(roles);
+        User savedUser = userRepository.save(user);
         return UserResponse.builder()
                 .id(savedUser.getId())
                 .name(savedUser.getName())

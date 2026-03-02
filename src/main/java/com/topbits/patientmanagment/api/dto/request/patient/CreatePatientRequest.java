@@ -30,7 +30,9 @@ public class CreatePatientRequest {
     @Size(max = 30)
     private String phone;
 
+    @NotBlank
     private LocalDate dateOfBirth;
 
+    @NotBlank
     private PatientStatus status;
 }

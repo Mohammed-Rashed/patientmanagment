@@ -1,9 +1,13 @@
 package com.topbits.patientmanagment.api.dto.request.user;
 
+import com.topbits.patientmanagment.domain.enums.RoleName;
+import com.topbits.patientmanagment.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,5 +31,6 @@ public class CreateUserRequest {
     @Size(max = 30)
     private String phone;
 
+    private Set<RoleName> roles;
 
 }

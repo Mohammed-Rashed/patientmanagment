@@ -181,7 +181,7 @@ public class AppointmentService {
             spec = spec.and(AppointmentSpecifications.hasPatientId(c.getPatientId()));
         }
         if (c.getDate() != null) {
-            spec = spec.and(AppointmentSpecifications.hasPatientId(c.getPatientId()));
+            spec = spec.and(AppointmentSpecifications.hasDate(c.getDate()));
         }
 
         Page<AppointmentResponse> page = appointmentRepository.findAll(spec, pageable).map(appointmentMapper::toResponse);

@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
         ApiError err = ApiError.builder()
                 .code("VALIDATION_ERROR")
                 .message("Invalid request body")
-                .details(List.of())
+                .details(List.of(new ApiError.FieldErrorItem("fieldName", ex.getMessage())))
                 .path(req.getRequestURI())
                 .timestamp(Instant.now())
                 .build();

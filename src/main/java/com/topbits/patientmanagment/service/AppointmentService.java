@@ -11,6 +11,7 @@ import com.topbits.patientmanagment.common.exception.NotFoundException;
 import com.topbits.patientmanagment.common.paging.PageMapper;
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import com.topbits.patientmanagment.entity.Appointment;
+import com.topbits.patientmanagment.entity.AppointmentReason;
 import com.topbits.patientmanagment.entity.Doctor;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.AppointmentRepository;
@@ -192,6 +193,16 @@ public class AppointmentService {
     public AppointmentResponse cancel(Long id) {
         Appointment existAppointment = appointmentRepository.findByIdAndStatusNot(id,AppointmentStatus.CANCELED).orElseThrow(() -> new NotFoundException("Appointment not found"));
         existAppointment.setStatus(AppointmentStatus.CANCELED);
+        return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
+    }
+    @Transactional
+    public AppointmentResponse reject(Long id,String reason) {
+        Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
+        existAppointment.setStatus(AppointmentStatus.REJECTED);
+        AppointmentReason appointmentReason=AppointmentReason.builder()
+                .appointment(existAppointment)
+                .reason(reason).build();
+        existAppointment.setAppointmentReason(appointmentReason);
         return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
     }
 

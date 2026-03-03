@@ -100,10 +100,12 @@ public class GlobalExceptionHandler {
             return ResponseEntity.badRequest().body(err);
         }
 
+        String rootMsg = getRootCauseMessage(ex);
+
         ApiError err = ApiError.builder()
                 .code("VALIDATION_ERROR")
                 .message("Invalid request body")
-                .details(List.of(new ApiError.FieldErrorItem("fieldName", ex.getMessage())))
+                .details(List.of(new ApiError.FieldErrorItem("Invalid request body", rootMsg )))
                 .path(req.getRequestURI())
                 .timestamp(Instant.now())
                 .build();
@@ -172,6 +174,14 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+    }
+
+    private String getRootCauseMessage(Throwable ex) {
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+        return root.getMessage();
     }
 
 }

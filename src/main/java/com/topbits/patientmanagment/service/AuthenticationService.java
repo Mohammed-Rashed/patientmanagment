@@ -4,10 +4,12 @@ import com.topbits.patientmanagment.api.dto.request.auth.LoginRequest;
 import com.topbits.patientmanagment.api.dto.request.auth.RegisterUserRequest;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
+import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import com.topbits.patientmanagment.entity.User;
 import com.topbits.patientmanagment.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,10 +49,15 @@ public class AuthenticationService {
     public UserDetails authenticate(LoginRequest request) {
         User user=userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getId(), request.password())
-        );
-        return (UserDetails) auth.getPrincipal();
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(String.valueOf(user.getId()), request.password())
+            );
+            return (UserDetails) auth.getPrincipal();
+
+        } catch (BadCredentialsException ex) {
+            throw new UnauthorizedException("Invalid email or password");
+        }
 
     }
 }

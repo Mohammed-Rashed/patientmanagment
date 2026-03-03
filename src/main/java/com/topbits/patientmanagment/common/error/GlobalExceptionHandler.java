@@ -1,6 +1,8 @@
 package com.topbits.patientmanagment.common.error;
 
+import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import jakarta.validation.ValidationException;
+import org.springframework.security.authentication.BadCredentialsException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -155,4 +157,21 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(err);
     }
+
+
+
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex,HttpServletRequest req) {
+        ApiError err = ApiError.builder()
+                .code("BAD_CREDENTIAL")
+                .message(ex.getMessage())
+                .details(List.of())
+                .path(req.getRequestURI())
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+    }
+
 }

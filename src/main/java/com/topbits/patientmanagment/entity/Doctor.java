@@ -34,4 +34,7 @@ public class Doctor extends BaseEntity {
     @Column(name = "status", nullable = false, length = 20)
     private DoctorStatus status;
 
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

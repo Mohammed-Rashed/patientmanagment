@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.service;
 
+import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;
@@ -7,9 +8,11 @@ import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
+import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import com.topbits.patientmanagment.common.paging.PageMapper;
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import com.topbits.patientmanagment.entity.Appointment;
+import com.topbits.patientmanagment.entity.AppointmentReason;
 import com.topbits.patientmanagment.entity.Doctor;
 import com.topbits.patientmanagment.entity.Patient;
 import com.topbits.patientmanagment.repository.AppointmentRepository;
@@ -22,7 +25,6 @@ import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.topbits.patientmanagment.common.security.SecurityUtils.currentUserId;
 import static com.topbits.patientmanagment.common.security.SecurityUtils.hasRole;
 
 @Service
@@ -168,11 +171,20 @@ public class AppointmentService {
         }
 
     }
-    public PageResponse<AppointmentResponse> list( AppointmentStatus status, Pageable pageable) {
+    public PageResponse<AppointmentResponse> list(AppointmentSearchCriteria c, Pageable pageable) {
         Specification<Appointment> spec =
                 (root, query, cb) -> cb.conjunction();
-        if (status != null) {
-            spec = spec.and(AppointmentSpecifications.hasStatus(status));
+        if (c.getStatus() != null) {
+            spec = spec.and(AppointmentSpecifications.hasStatus(c.getStatus()));
+        }
+        if (c.getDoctorId() != null) {
+            spec = spec.and(AppointmentSpecifications.hasDoctorId(c.getDoctorId()));
+        }
+        if (c.getPatientId() != null) {
+            spec = spec.and(AppointmentSpecifications.hasPatientId(c.getPatientId()));
+        }
+        if (c.getDate() != null) {
+            spec = spec.and(AppointmentSpecifications.hasDate(c.getDate()));
         }
 
         Page<AppointmentResponse> page = appointmentRepository.findAll(spec, pageable).map(appointmentMapper::toResponse);
@@ -183,6 +195,32 @@ public class AppointmentService {
     public AppointmentResponse cancel(Long id) {
         Appointment existAppointment = appointmentRepository.findByIdAndStatusNot(id,AppointmentStatus.CANCELED).orElseThrow(() -> new NotFoundException("Appointment not found"));
         existAppointment.setStatus(AppointmentStatus.CANCELED);
+        return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
+    }
+    @Transactional
+    public AppointmentResponse reject(Long id,String reason) {
+        Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
+        existAppointment.setStatus(AppointmentStatus.REJECTED);
+        AppointmentReason appointmentReason=AppointmentReason.builder()
+                .appointment(existAppointment)
+                .reason(reason).build();
+        existAppointment.setAppointmentReason(appointmentReason);
+        return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
+    }
+
+    @Transactional
+    public AppointmentResponse complete(Long id,String reason) {
+//        System.out.println("currentUserId()"+currentUserId());
+        Long userId = currentUserId();
+        Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED,AppointmentStatus.COMPLETED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
+        if (!existAppointment.getDoctor().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not allowed to modify this appointment");
+        }
+        existAppointment.setStatus(AppointmentStatus.COMPLETED);
+        AppointmentReason appointmentReason=AppointmentReason.builder()
+                .appointment(existAppointment)
+                .reason(reason).build();
+        existAppointment.setAppointmentReason(appointmentReason);
         return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
     }
 

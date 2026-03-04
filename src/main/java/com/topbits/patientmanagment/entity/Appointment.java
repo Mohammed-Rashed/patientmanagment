@@ -37,4 +37,9 @@ public class Appointment extends BaseEntity {
     @Column(name = "notes", length = 500)
     private String notes;
 
+    @OneToOne(mappedBy = "appointment",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private AppointmentReason appointmentReason;
 }

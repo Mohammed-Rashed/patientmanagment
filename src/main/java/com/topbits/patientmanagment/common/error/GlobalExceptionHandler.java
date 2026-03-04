@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.common.error;
 
+import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import jakarta.validation.ValidationException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import com.topbits.patientmanagment.common.exception.ConflictException;
@@ -98,10 +99,12 @@ public class GlobalExceptionHandler {
             return ResponseEntity.badRequest().body(err);
         }
 
+        String rootMsg = getRootCauseMessage(ex);
+
         ApiError err = ApiError.builder()
                 .code("VALIDATION_ERROR")
                 .message("Invalid request body")
-                .details(List.of())
+                .details(List.of(new ApiError.FieldErrorItem("Invalid request body", rootMsg )))
                 .path(req.getRequestURI())
                 .timestamp(Instant.now())
                 .build();
@@ -155,4 +158,29 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(err);
     }
+
+
+
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex,HttpServletRequest req) {
+        ApiError err = ApiError.builder()
+                .code("BAD_CREDENTIAL")
+                .message(ex.getMessage())
+                .details(List.of())
+                .path(req.getRequestURI())
+                .timestamp(Instant.now())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+    }
+
+    private String getRootCauseMessage(Throwable ex) {
+        Throwable root = ex;
+        while (root.getCause() != null && root.getCause() != root) {
+            root = root.getCause();
+        }
+        return root.getMessage();
+    }
+
 }

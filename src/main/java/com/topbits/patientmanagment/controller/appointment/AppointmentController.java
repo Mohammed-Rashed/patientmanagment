@@ -1,5 +1,6 @@
 package com.topbits.patientmanagment.controller.appointment;
 
+import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
 import com.topbits.patientmanagment.api.dto.request.appointment.CreateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.UpdateAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AvailableSlotResponse;
@@ -25,9 +26,14 @@ public class AppointmentController {
     @GetMapping()
     public PageResponse<AppointmentResponse> getAppointments(
             @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) LocalDate date,
             Pageable pageable
     ) {
-        return appointmentService.list( status, pageable);
+        AppointmentSearchCriteria criteria = AppointmentSearchCriteria.builder()
+                .status(status)
+                .date(date)
+                .build();
+        return appointmentService.list( criteria, pageable);
     }
     @GetMapping("/{id}")
     public AppointmentResponse findById(@PathVariable Long id) {

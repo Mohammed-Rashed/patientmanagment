@@ -1,6 +1,7 @@
 package com.topbits.patientmanagment.controller.doctor;
 
 import com.topbits.patientmanagment.api.dto.general.AppointmentSearchCriteria;
+import com.topbits.patientmanagment.api.dto.request.appointment.CompleteAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.request.appointment.RejectAppointmentRequest;
 import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
@@ -46,6 +47,15 @@ public class AppointmentManagement {
                                     @Valid
                                     RejectAppointmentRequest request) {
         AppointmentResponse appointmentResponse=appointmentService.reject(id, request.getReason());
+        return ResponseEntity.ok(appointmentResponse);
+    }
+
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<?> complete(@PathVariable Long id,
+                                    @RequestBody
+                                    @Valid
+                                    CompleteAppointmentRequest request) {
+        AppointmentResponse appointmentResponse=appointmentService.complete(id, request.getReason());
         return ResponseEntity.ok(appointmentResponse);
     }
 

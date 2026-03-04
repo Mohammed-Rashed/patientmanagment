@@ -2,7 +2,6 @@ package com.topbits.patientmanagment.common.error;
 
 import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import jakarta.validation.ValidationException;
-import org.springframework.security.authentication.BadCredentialsException;
 import tools.jackson.databind.exc.InvalidFormatException;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import org.springframework.http.converter.HttpMessageNotReadableException;

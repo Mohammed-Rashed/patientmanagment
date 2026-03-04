@@ -8,6 +8,7 @@ import com.topbits.patientmanagment.api.dto.response.AppointmentResponse;
 import com.topbits.patientmanagment.api.dto.response.PageResponse;
 import com.topbits.patientmanagment.common.exception.ConflictException;
 import com.topbits.patientmanagment.common.exception.NotFoundException;
+import com.topbits.patientmanagment.common.exception.UnauthorizedException;
 import com.topbits.patientmanagment.common.paging.PageMapper;
 import com.topbits.patientmanagment.domain.enums.AppointmentStatus;
 import com.topbits.patientmanagment.entity.Appointment;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.topbits.patientmanagment.common.security.SecurityUtils.currentUserId;
 import static com.topbits.patientmanagment.common.security.SecurityUtils.hasRole;
 
 @Service
@@ -199,6 +201,22 @@ public class AppointmentService {
     public AppointmentResponse reject(Long id,String reason) {
         Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
         existAppointment.setStatus(AppointmentStatus.REJECTED);
+        AppointmentReason appointmentReason=AppointmentReason.builder()
+                .appointment(existAppointment)
+                .reason(reason).build();
+        existAppointment.setAppointmentReason(appointmentReason);
+        return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
+    }
+
+    @Transactional
+    public AppointmentResponse complete(Long id,String reason) {
+//        System.out.println("currentUserId()"+currentUserId());
+        Long userId = currentUserId();
+        Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED,AppointmentStatus.COMPLETED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
+        if (!existAppointment.getDoctor().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not allowed to modify this appointment");
+        }
+        existAppointment.setStatus(AppointmentStatus.COMPLETED);
         AppointmentReason appointmentReason=AppointmentReason.builder()
                 .appointment(existAppointment)
                 .reason(reason).build();

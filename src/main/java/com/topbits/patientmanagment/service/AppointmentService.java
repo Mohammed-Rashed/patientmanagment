@@ -213,9 +213,8 @@ public class AppointmentService {
 //        System.out.println("currentUserId()"+currentUserId());
         Long userId = currentUserId();
         Appointment existAppointment = appointmentRepository.findByIdAndStatusNotIn(id,List.of(AppointmentStatus.REJECTED,AppointmentStatus.CANCELED,AppointmentStatus.COMPLETED)).orElseThrow(() -> new NotFoundException("Appointment not found"));
-        if (!existAppointment.getDoctor().getId().equals(userId)) {
-            throw new UnauthorizedException("You are not allowed to modify this appointment");
-        }
+        assertDoctorCanModify(existAppointment, userId);
+        assertCanCompleteNow(existAppointment);
         existAppointment.setStatus(AppointmentStatus.COMPLETED);
         AppointmentReason appointmentReason=AppointmentReason.builder()
                 .appointment(existAppointment)
@@ -223,7 +222,27 @@ public class AppointmentService {
         existAppointment.setAppointmentReason(appointmentReason);
         return appointmentMapper.toResponse(appointmentRepository.save(existAppointment));
     }
+    private static final long COMPLETE_GRACE_MINUTES = 10;
 
+    private void assertDoctorCanModify(Appointment appointment, Long userId) {
+        if (!appointment.getDoctor().getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("You are not allowed to modify this appointment");
+        }
+    }
+
+    private void assertCanCompleteNow(Appointment appointment) {
+        LocalDateTime startTime = appointment.getStartTime();
+        if (startTime == null) {
+            throw new ConflictException("Appointment start time is missing");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime allowedFrom = startTime.minusMinutes(COMPLETE_GRACE_MINUTES);
+
+        if (now.isBefore(allowedFrom)) {
+            throw new ConflictException("You can complete the appointment only when its start time comes");
+        }
+    }
     public List<AvailableSlotResponse> getDoctorSlots(Long doctorId, LocalDate date) {
         doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new NotFoundException("Doctor not found"));
